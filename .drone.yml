@@ -20,12 +20,11 @@ steps:
 - name: publish-master-image
   image: plugins/docker
   settings:
-    #context: package
     custom_dns: 1.1.1.1
     dockerfile: package/Dockerfile
     password:
       from_secret: docker_password
-    repo: longhornio/longhorn-engine
+    repo: meldafrawi/longhorn-engine
     tag: master
     username:
       from_secret: docker_username
