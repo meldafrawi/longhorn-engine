@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-set -x
-
 source $(dirname $0)/version
 
 cd $(dirname $0)/..
@@ -10,7 +8,7 @@ cd $(dirname $0)/..
 PROJECT=`basename "$PWD"`
 
 TAG=${TAG:-${VERSION}}
-REPO=${REPO:-meldafrawi}
+REPO=${REPO:-longhornio}
 IMAGE=${REPO}/${PROJECT}:${TAG}
 
 if [ ! -x ./bin/longhorn ]; then
