@@ -13,20 +13,15 @@ TAG=${TAG:-${VERSION}}
 REPO=${REPO:-meldafrawi}
 IMAGE=${REPO}/${PROJECT}:${TAG}
 
-cp /usr/src/tgt/pkg/tgt_*.deb ./bin/
-
-cp /usr/local/bin/longhorn-engine-launcher ./bin/
-
-
 if [ ! -x ./bin/longhorn ]; then
     ./scripts/build
 fi
 
 #cp ../bin/longhorn* .
 
-#cp /usr/src/tgt/pkg/tgt_*.deb ./bin/
+cp /usr/src/tgt/pkg/tgt_*.deb ./bin/
 
-#cp /usr/local/bin/longhorn-engine-launcher ./bin/
+cp /usr/local/bin/longhorn-engine-launcher ./bin/
 
 docker build -t ${IMAGE} -f package/Dockerfile .
 
