@@ -1,18 +1,15 @@
-import cmd
-from common import (  # NOQA
-    grpc_controller, grpc_replica1, grpc_replica2,  # NOQA
-    grpc_backing_controller,  # NOQA
-    grpc_backing_replica1, grpc_backing_replica2,  # NOQA
+import data.cmd as cmd
+from data.common import (  # NOQA
     open_replica, cleanup_replica, cleanup_controller,
     get_blockdev, prepare_backup_dir,
     random_string, verify_read, verify_data, verify_async,
     verify_replica_state, wait_for_purge_completion
 
 )
-from snapshot_tree import (
+from data.snapshot_tree import (
     snapshot_tree_build, snapshot_tree_verify
 )
-from setting import (
+from data.setting import (
     VOLUME_NAME, VOLUME_BACKING_NAME,
     ENGINE_NAME, BACKUP_DIR, VOLUME_HEAD,
 )
@@ -103,9 +100,9 @@ def test_ha_single_replica_rebuild(grpc_controller,  # NOQA
 
     info = cmd.snapshot_info(address)
     assert len(info) == 3
-    sysnap = info[newsnap]["parent"]
+    sysnap = info[newsnap.decode('utf-8')]["parent"]
     assert info[sysnap]["parent"] == ""
-    assert newsnap in info[sysnap]["children"]
+    assert newsnap.decode('utf-8') in info[sysnap]["children"]
     assert info[sysnap]["usercreated"] is False
     assert info[sysnap]["removed"] is False
 
@@ -114,7 +111,7 @@ def test_ha_single_replica_rebuild(grpc_controller,  # NOQA
 
     info = cmd.snapshot_info(address)
     assert len(info) == 2
-    assert info[newsnap] is not None
+    assert info[newsnap.decode('utf-8')] is not None
     assert info[VOLUME_HEAD] is not None
 
 
@@ -348,9 +345,9 @@ def test_ha_single_backing_replica_rebuild(grpc_backing_controller,  # NOQA
 
     info = cmd.snapshot_info(address)
     assert len(info) == 3
-    sysnap = info[newsnap]["parent"]
+    sysnap = info[newsnap.decode('utf-8')]["parent"]
     assert info[sysnap]["parent"] == ""
-    assert newsnap in info[sysnap]["children"]
+    assert newsnap.decode('utf-8') in info[sysnap]["children"]
     assert info[sysnap]["usercreated"] is False
     assert info[sysnap]["removed"] is False
 
@@ -359,7 +356,7 @@ def test_ha_single_backing_replica_rebuild(grpc_backing_controller,  # NOQA
 
     info = cmd.snapshot_info(address)
     assert len(info) == 2
-    assert info[newsnap] is not None
+    assert info[newsnap.decode('utf-8')] is not None
     assert info[VOLUME_HEAD] is not None
 
 

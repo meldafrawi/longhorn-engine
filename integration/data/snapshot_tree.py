@@ -1,10 +1,10 @@
-import cmd
-from common import (  # NOQA
+import data.cmd as cmd
+from data.common import (  # NOQA
     read_dev, random_string, verify_data,
     snapshot_revert_with_frontend,
     restore_with_frontend,
 )
-from setting import VOLUME_HEAD
+from data.setting import VOLUME_HEAD
 
 
 def snapshot_tree_build(dev, address, engine_name,
@@ -62,75 +62,101 @@ def snapshot_tree_verify(dev, address, engine_name,
 def snapshot_tree_verify_relationship(address, snap, strict):
     info = cmd.snapshot_info(address)
 
-    assert snap["0a"] in info
-    assert snap["0b"] in info[snap["0a"]]["children"]
+    assert snap["0a"].decode('utf-8') in info
+    assert snap["0b"].decode('utf-8') in \
+        info[snap["0a"].decode('utf-8')]["children"]
 
-    assert snap["0b"] in info
-    assert info[snap["0b"]]["parent"] == snap["0a"]
-    assert len(info[snap["0b"]]["children"]) == 3
-    assert snap["0c"] in info[snap["0b"]]["children"]
-    assert snap["1a"] in info[snap["0b"]]["children"]
-    assert snap["2a"] in info[snap["0b"]]["children"]
+    assert snap["0b"].decode('utf-8') in info
+    assert info[snap["0b"].decode('utf-8')]["parent"] == \
+        snap["0a"].decode('utf-8')
+    assert len(info[snap["0b"].decode('utf-8')]["children"]) == 3
+    assert snap["0c"].decode('utf-8') in \
+        info[snap["0b"].decode('utf-8')]["children"]
+    assert snap["1a"].decode('utf-8') in \
+        info[snap["0b"].decode('utf-8')]["children"]
+    assert snap["2a"].decode('utf-8') in \
+        info[snap["0b"].decode('utf-8')]["children"]
 
-    assert snap["0c"] in info
-    assert info[snap["0c"]]["parent"] == snap["0b"]
-    assert not info[snap["0c"]]["children"]
+    assert snap["0c"].decode('utf-8') in info
+    assert info[snap["0c"].decode('utf-8')]["parent"] == \
+        snap["0b"].decode('utf-8')
+    assert not info[snap["0c"].decode('utf-8')]["children"]
 
-    assert snap["1a"] in info
-    assert info[snap["1a"]]["parent"] == snap["0b"]
-    assert snap["1b"] in info[snap["1a"]]["children"]
+    assert snap["1a"] .decode('utf-8')in info
+    assert info[snap["1a"].decode('utf-8')]["parent"] == \
+        snap["0b"].decode('utf-8')
+    assert snap["1b"].decode('utf-8') in \
+        info[snap["1a"].decode('utf-8')]["children"]
 
-    assert snap["1b"] in info
-    assert info[snap["1b"]]["parent"] == snap["1a"]
-    assert snap["1c"] in info[snap["1b"]]["children"]
+    assert snap["1b"].decode('utf-8') in info
+    assert info[snap["1b"].decode('utf-8')]["parent"] == \
+        snap["1a"].decode('utf-8')
+    assert snap["1c"].decode('utf-8') in \
+        info[snap["1b"].decode('utf-8')]["children"]
 
-    assert snap["1c"] in info
-    assert info[snap["1c"]]["parent"] == snap["1b"]
-    assert not info[snap["1c"]]["children"]
+    assert snap["1c"].decode('utf-8') in info
+    assert info[snap["1c"].decode('utf-8')]["parent"] == \
+        snap["1b"].decode('utf-8')
+    assert not info[snap["1c"].decode('utf-8')]["children"]
 
-    assert snap["2a"] in info
-    assert info[snap["2a"]]["parent"] == snap["0b"]
-    assert len(info[snap["2a"]]["children"]) == 2
-    assert snap["2b"] in info[snap["2a"]]["children"]
-    assert snap["3a"] in info[snap["2a"]]["children"]
+    assert snap["2a"].decode('utf-8') in info
+    assert info[snap["2a"].decode('utf-8')]["parent"] == \
+        snap["0b"].decode('utf-8')
+    assert len(info[snap["2a"].decode('utf-8')]["children"]) == 2
+    assert snap["2b"].decode('utf-8') in \
+        info[snap["2a"].decode('utf-8')]["children"]
+    assert snap["3a"].decode('utf-8') in \
+        info[snap["2a"].decode('utf-8')]["children"]
 
-    assert snap["2b"] in info
-    assert info[snap["2b"]]["parent"] == snap["2a"]
-    assert snap["2c"] in info[snap["2b"]]["children"]
+    assert snap["2b"].decode('utf-8') in info
+    assert info[snap["2b"].decode('utf-8')]["parent"] == \
+        snap["2a"].decode('utf-8')
+    assert snap["2c"].decode('utf-8') in \
+        info[snap["2b"].decode('utf-8')]["children"]
 
-    assert snap["2c"] in info
-    assert info[snap["2c"]]["parent"] == snap["2b"]
-    assert not info[snap["2c"]]["children"]
+    assert snap["2c"].decode('utf-8') in info
+    assert info[snap["2c"].decode('utf-8')]["parent"] == \
+        snap["2b"].decode('utf-8')
+    assert not info[snap["2c"].decode('utf-8')]["children"]
 
-    assert snap["3a"] in info
-    assert info[snap["3a"]]["parent"] == snap["2a"]
-    assert snap["3b"] in info[snap["3a"]]["children"]
+    assert snap["3a"].decode('utf-8') in info
+    assert info[snap["3a"].decode('utf-8')]["parent"] == \
+        snap["2a"].decode('utf-8')
+    assert snap["3b"].decode('utf-8') in \
+        info[snap["3a"].decode('utf-8')]["children"]
 
-    assert snap["3b"] in info
-    assert info[snap["3b"]]["parent"] == snap["3a"]
-    assert snap["3c"] in info[snap["3b"]]["children"]
+    assert snap["3b"].decode('utf-8') in info
+    assert info[snap["3b"].decode('utf-8')]["parent"] == \
+        snap["3a"].decode('utf-8')
+    assert snap["3c"].decode('utf-8') in \
+        info[snap["3b"].decode('utf-8')]["children"]
 
-    assert snap["3c"] in info
-    assert info[snap["3c"]]["parent"] == snap["3b"]
+    assert snap["3c"].decode('utf-8') in info
+    assert info[snap["3c"].decode('utf-8')]["parent"] == \
+        snap["3b"].decode('utf-8')
 
     if strict:
         assert len(info) == 13
-        assert info[snap["0a"]]["parent"] == ""
-        assert VOLUME_HEAD in info[snap["3c"]]["children"]
+        assert info[snap["0a"].decode('utf-8')]["parent"] == ""
+        assert VOLUME_HEAD in info[snap["3c"].decode('utf-8')]["children"]
         assert VOLUME_HEAD in info
-        assert info[VOLUME_HEAD]["parent"] == snap["3c"]
+        assert info[VOLUME_HEAD]["parent"] == snap["3c"].decode('utf-8')
         assert not info[VOLUME_HEAD]["children"]
 
         output = cmd.snapshot_ls(address)
-        assert output == '''ID
+        assert output.decode('utf-8') == '''ID
 {}
 {}
 {}
 {}
 {}
 {}
-'''.format(snap["3c"], snap["3b"], snap["3a"],
-           snap["2a"], snap["0b"], snap["0a"])
+'''.format(snap["3c"].decode('utf-8'),
+           snap["3b"].decode('utf-8'),
+           snap["3a"].decode('utf-8'),
+           snap["2a"].decode('utf-8'),
+           snap["0b"].decode('utf-8'),
+           snap["0a"].decode('utf-8'))
 
 
 def snapshot_tree_verify_data(dev, address, engine_name,

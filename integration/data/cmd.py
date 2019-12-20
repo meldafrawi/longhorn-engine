@@ -3,7 +3,7 @@ import time
 import subprocess
 from os import path
 
-from setting import RETRY_COUNTS, RETRY_INTERVAL
+from data.setting import RETRY_COUNTS, RETRY_INTERVAL
 
 
 def _file(f):

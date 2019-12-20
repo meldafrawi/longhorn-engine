@@ -1,9 +1,9 @@
-import cmd
-from common import (  # NOQA
-    backup_targets,  # NOQA
-    grpc_controller, grpc_backing_controller,  # NOQA
-    grpc_replica1, grpc_replica2,  # NOQA
-    grpc_backing_replica1, grpc_backing_replica2,  # NOQA
+import data.cmd as cmd
+from data.common import (  # NOQA
+    #backup_targets,  # NOQA
+    #grpc_controller, grpc_backing_controller,  # NOQA
+    #grpc_replica1, grpc_replica2,  # NOQA
+    #grpc_backing_replica1, grpc_backing_replica2,  # NOQA
     cleanup_controller, cleanup_replica,
     get_dev, get_backing_dev, read_dev,
     read_from_backing_file,
@@ -11,10 +11,10 @@ from common import (  # NOQA
     create_backup, rm_backups,
     restore_with_frontend,
 )
-from snapshot_tree import (
+from data.snapshot_tree import (
     snapshot_tree_build, snapshot_tree_verify_backup_node
 )
-from setting import (
+from data.setting import (
     VOLUME_NAME, VOLUME_BACKING_NAME, BLOCK_SIZE_STR,
     ENGINE_NAME, ENGINE_BACKING_NAME,
 )
@@ -278,7 +278,7 @@ def test_backup_volume_deletion(grpc_replica1, grpc_replica2,  # NOQA
         backup_info = create_backup(address, snap, backup_target)
         assert backup_info["VolumeName"] == VOLUME_NAME
         assert backup_info["Size"] == BLOCK_SIZE_STR
-        assert snap in backup_info["SnapshotName"]
+        assert snap.decode('utf-8') in backup_info["SnapshotName"]
 
         cmd.backup_volume_rm(address, VOLUME_NAME, backup_target)
         info = cmd.backup_volume_list(address, VOLUME_NAME, backup_target)

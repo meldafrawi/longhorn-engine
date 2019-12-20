@@ -1,15 +1,13 @@
-import cmd
-from common import (  # NOQA
-    grpc_controller, grpc_replica1, grpc_replica2,  # NOQA
-    grpc_backing_controller, grpc_backing_replica1, grpc_backing_replica2,  # NOQA
+import data.cmd as cmd
+from data.common import (  # NOQA
     get_dev, get_backing_dev, read_dev,
     generate_random_data, read_from_backing_file,
     Snapshot, snapshot_revert_with_frontend, wait_for_purge_completion
 )
-from setting import (
+from data.setting import (
     VOLUME_HEAD, ENGINE_NAME, ENGINE_BACKING_NAME,
 )
-from snapshot_tree import snapshot_tree_build, snapshot_tree_verify_node
+from data.snapshot_tree import snapshot_tree_build, snapshot_tree_verify_node
 
 
 def snapshot_revert_test(dev, address, engine_name):  # NOQA
@@ -64,9 +62,9 @@ def test_snapshot_rm_basic(grpc_controller,  # NOQA
     info = cmd.snapshot_info(address)
     assert len(info) == 4
     assert VOLUME_HEAD in info
-    assert snap1.name in info
-    assert snap2.name in info
-    assert snap3.name in info
+    assert snap1.name.decode('utf-8') in info
+    assert snap2.name.decode('utf-8') in info
+    assert snap3.name.decode('utf-8') in info
 
     cmd.snapshot_rm(address, snap2.name)
     cmd.snapshot_purge(address)
@@ -74,8 +72,8 @@ def test_snapshot_rm_basic(grpc_controller,  # NOQA
 
     info = cmd.snapshot_info(address)
     assert len(info) == 3
-    assert snap1.name in info
-    assert snap3.name in info
+    assert snap1.name.decode('utf-8') in info
+    assert snap3.name.decode('utf-8') in info
 
     snap3.verify_checksum()
     snap2.verify_data()
@@ -105,7 +103,7 @@ def test_snapshot_revert_with_backing_file(grpc_backing_controller,  # NOQA
     info = cmd.snapshot_info(address)
     assert len(info) == 2
     assert VOLUME_HEAD in info
-    assert snap0 in info
+    assert snap0.decode('utf-8') in info
 
     exists = read_from_backing_file(offset, length)
     assert before == exists
@@ -141,10 +139,10 @@ def test_snapshot_rm_rolling(grpc_controller,  # NOQA
 
     info = cmd.snapshot_info(address)
     assert len(info) == 3
-    assert snap1.name in info
-    assert snap2.name in info
-    assert info[snap1.name]["removed"] is True
-    assert info[snap2.name]["removed"] is False
+    assert snap1.name.decode('utf-8') in info
+    assert snap2.name.decode('utf-8') in info
+    assert info[snap1.name.decode('utf-8')]["removed"] is True
+    assert info[snap2.name.decode('utf-8')]["removed"] is False
 
     cmd.snapshot_rm(address, snap2.name)
     # this should trigger the deletion of snap1
@@ -170,12 +168,13 @@ def test_snapshot_rm_rolling(grpc_controller,  # NOQA
 
     info = cmd.snapshot_info(address)
     assert len(info) == 5
-    assert snap1.name not in info
-    assert snap2.name in info
-    assert snap3.name in info
-    assert snap4.name in info
-    assert snap5.name in info
-    assert info[snap2.name]["removed"] is True
+    print(snap1.name)
+    assert snap1.name.decode('utf-8') not in info
+    assert snap2.name.decode('utf-8') in info
+    assert snap3.name.decode('utf-8') in info
+    assert snap4.name.decode('utf-8') in info
+    assert snap5.name.decode('utf-8') in info
+    assert info[snap2.name.decode('utf-8')]["removed"] is True
 
     cmd.snapshot_rm(address, snap3.name)
     cmd.snapshot_rm(address, snap4.name)
@@ -187,12 +186,12 @@ def test_snapshot_rm_rolling(grpc_controller,  # NOQA
 
     info = cmd.snapshot_info(address)
     assert len(info) == 2
-    assert snap1.name not in info
-    assert snap2.name not in info
-    assert snap3.name not in info
-    assert snap4.name not in info
-    assert snap5.name in info
-    assert info[snap5.name]["removed"] is True
+    assert snap1.name.decode('utf-8') not in info
+    assert snap2.name.decode('utf-8') not in info
+    assert snap3.name.decode('utf-8') not in info
+    assert snap4.name.decode('utf-8') not in info
+    assert snap5.name.decode('utf-8') in info
+    assert info[snap5.name.decode('utf-8')]["removed"] is True
 
     snap5.verify_checksum()
     snap4.verify_data()
@@ -232,27 +231,33 @@ def test_snapshot_tree_basic(grpc_controller,  # NOQA
     info = cmd.snapshot_info(address)
     assert len(info) == 5
 
-    assert snap["0b"] in info
-    assert info[snap["0b"]]["parent"] == ""
-    assert len(info[snap["0b"]]["children"]) == 2
-    assert snap["0c"] in info[snap["0b"]]["children"]
-    assert snap["1a"] in info[snap["0b"]]["children"]
-    assert info[snap["0b"]]["removed"] is True
+    assert snap["0b"].decode('utf-8') in info
+    assert info[snap["0b"].decode('utf-8')]["parent"] == ""
+    assert len(info[snap["0b"].decode('utf-8')]["children"]) == 2
+    assert snap["0c"] .decode('utf-8') in \
+        info[snap["0b"].decode('utf-8')]["children"]
+    assert snap["1a"].decode('utf-8') in \
+        info[snap["0b"].decode('utf-8')]["children"]
+    assert info[snap["0b"].decode('utf-8')]["removed"] is True
 
-    assert snap["0c"] in info
-    assert info[snap["0c"]]["parent"] == snap["0b"]
-    assert not info[snap["0c"]]["children"]
+    assert snap["0c"].decode('utf-8') in info
+    assert info[snap["0c"].decode('utf-8')]["parent"] == \
+        snap["0b"].decode('utf-8')
+    assert not info[snap["0c"].decode('utf-8')]["children"]
 
-    assert snap["1a"] in info
-    assert info[snap["1a"]]["parent"] == snap["0b"]
-    assert snap["1b"] in info[snap["1a"]]["children"]
+    assert snap["1a"].decode('utf-8') in info
+    assert info[snap["1a"].decode('utf-8')]["parent"] == \
+        snap["0b"].decode('utf-8')
+    assert snap["1b"].decode('utf-8') in \
+        info[snap["1a"].decode('utf-8')]["children"]
 
-    assert snap["1b"] in info
-    assert info[snap["1b"]]["parent"] == snap["1a"]
-    assert VOLUME_HEAD in info[snap["1b"]]["children"]
+    assert snap["1b"].decode('utf-8') in info
+    assert info[snap["1b"].decode('utf-8')]["parent"] == \
+        snap["1a"].decode('utf-8')
+    assert VOLUME_HEAD in info[snap["1b"].decode('utf-8')]["children"]
 
     assert VOLUME_HEAD in info
-    assert info[VOLUME_HEAD]["parent"] == snap["1b"]
+    assert info[VOLUME_HEAD]["parent"] == snap["1b"].decode('utf-8')
 
     snapshot_tree_verify_node(dev, address, ENGINE_NAME,
                               offset, length, snap, data, "0b")
