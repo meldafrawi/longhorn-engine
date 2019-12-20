@@ -1,7 +1,7 @@
 import grpc
 
-import replica_pb2
-import replica_pb2_grpc
+import replica_pb2 as replica_pb2
+import replica_pb2_grpc as replica_pb2_grpc
 from google.protobuf import empty_pb2
 
 

@@ -1,7 +1,7 @@
 import grpc
 
-import controller_pb2
-import controller_pb2_grpc
+import controller_pb2 as controller_pb2
+import controller_pb2_grpc as controller_pb2_grpc
 from google.protobuf import empty_pb2
 
 
